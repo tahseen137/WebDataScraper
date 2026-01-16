@@ -674,74 +674,26 @@ class EnhancedCreditCardScraper:
 # =============================================================================
 
 def upload_to_supabase(cards: List[CreditCard]) -> dict:
-    """Upload verified cards to Supabase."""
-    from supabase import create_client
+    """Upload verified cards to Supabase using the CreditCardUploader."""
+    from credit_card_uploader import CreditCardUploader
     
-    url = os.getenv('SUPABASE_URL')
-    key = os.getenv('SUPABASE_KEY')
-    
-    if not url or not key:
-        raise ValueError("SUPABASE_URL and SUPABASE_KEY must be set in .env")
-    
-    client = create_client(url, key)
-    results = {'inserted': 0, 'updated': 0, 'category_rewards': 0, 'errors': []}
-    
-    for card in cards:
-        try:
-            # Prepare card data
-            card_data = {
-                'card_key': card.card_key,
-                'name': card.name,
-                'name_fr': card.name_fr,
-                'issuer': card.issuer,
-                'reward_program': card.reward_program,
-                'reward_currency': card.reward_currency,
-                'point_valuation': card.point_valuation,
-                'annual_fee': card.annual_fee,
-                'base_reward_rate': card.base_reward_rate,
-                'base_reward_unit': card.base_reward_unit,
-                'image_url': card.image_url,
-                'apply_url': card.apply_url,
-                'is_active': True,
-            }
-            
-            # Check if exists
-            existing = client.table('cards').select('id').eq('card_key', card.card_key).execute()
-            
-            if existing.data:
-                card_id = existing.data[0]['id']
-                client.table('cards').update(card_data).eq('id', card_id).execute()
-                results['updated'] += 1
-            else:
-                result = client.table('cards').insert(card_data).execute()
-                card_id = result.data[0]['id'] if result.data else None
-                results['inserted'] += 1
-            
-            # Upload category rewards
-            if card_id and card.category_rewards:
-                # Delete existing
-                client.table('category_rewards').delete().eq('card_id', card_id).execute()
-                
-                # Insert new
-                for cr in card.category_rewards:
-                    cr_data = {
-                        'card_id': card_id,
-                        'category': cr.category,
-                        'multiplier': cr.multiplier,
-                        'reward_unit': cr.reward_unit,
-                        'description': cr.description,
-                        'description_fr': cr.description_fr,
-                    }
-                    client.table('category_rewards').insert(cr_data).execute()
-                    results['category_rewards'] += 1
-                    
-        except Exception as e:
-            error_msg = str(e)
-            results['errors'].append({'card': card.card_key, 'error': error_msg})
-            if len(results['errors']) == 1:  # Print first error for debugging
-                print(f"    First error: {error_msg[:200]}")
-    
-    return results
+    try:
+        uploader = CreditCardUploader()
+        results = uploader.upload_cards(cards)
+        
+        # Print first error if any
+        if results['errors']:
+            print(f"    First error: {results['errors'][0]['error'][:200]}")
+        
+        return {
+            'inserted': results['cards_inserted'],
+            'updated': results['cards_updated'],
+            'category_rewards': results['category_rewards_inserted'],
+            'errors': results['errors']
+        }
+    except Exception as e:
+        print(f"    Upload error: {str(e)[:200]}")
+        return {'inserted': 0, 'updated': 0, 'category_rewards': 0, 'errors': [{'error': str(e)}]}
 
 
 # =============================================================================
