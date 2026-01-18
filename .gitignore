@@ -40,6 +40,12 @@ scraped_cards.json
 *.log
 logs/
 
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+coverage.xml
+
 # OS
 .DS_Store
 Thumbs.db
