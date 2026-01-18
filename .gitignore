@@ -38,6 +38,7 @@ env/
 # Output files
 scraped_cards.json
 *.log
+logs/
 
 # OS
 .DS_Store
