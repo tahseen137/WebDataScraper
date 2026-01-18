@@ -7,8 +7,12 @@ import json
 import os
 from dotenv import load_dotenv
 from supabase import create_client
+from logger_config import setup_logger
 
 load_dotenv(override=True)
+
+# Set up logger
+logger = setup_logger("seed_known_cards", level="INFO")
 
 # Comprehensive Canadian credit cards database with accurate category rewards and signup bonuses
 KNOWN_CARDS = [
@@ -672,24 +676,24 @@ def upload_known_cards():
 
 
 def main():
-    print("=" * 60)
-    print("Seeding Known Cards with Category Rewards")
-    print("=" * 60)
-    
+    logger.info("=" * 60)
+    logger.info("Seeding Known Cards with Category Rewards")
+    logger.info("=" * 60)
+
     result = upload_known_cards()
-    
-    print(f"\nResults:")
-    print(f"  Cards inserted: {result['inserted']}")
-    print(f"  Cards updated: {result['updated']}")
-    print(f"  Category rewards: {result['category_rewards']}")
-    print(f"  Signup bonuses: {result['signup_bonuses']}")
-    
+
+    logger.info(f"\nResults:")
+    logger.info(f"  Cards inserted: {result['inserted']}")
+    logger.info(f"  Cards updated: {result['updated']}")
+    logger.info(f"  Category rewards: {result['category_rewards']}")
+    logger.info(f"  Signup bonuses: {result['signup_bonuses']}")
+
     if result['errors']:
-        print(f"\nErrors ({len(result['errors'])}):")
+        logger.error(f"\nErrors ({len(result['errors'])}):")
         for err in result['errors']:
-            print(f"  - {err['card']}: {err['error']}")
-    
-    print("\nDone!")
+            logger.error(f"  - {err['card']}: {err['error']}")
+
+    logger.info("\nDone!")
 
 
 if __name__ == '__main__':

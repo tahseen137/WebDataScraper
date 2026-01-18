@@ -16,8 +16,12 @@ from dataclasses import dataclass, field, asdict
 from typing import Optional, List, Dict
 import os
 from dotenv import load_dotenv
+from logger_config import setup_logger
 
 load_dotenv()
+
+# Set up logger
+logger = setup_logger("enhanced_scraper", level="INFO")
 
 
 # =============================================================================
@@ -274,7 +278,7 @@ class EnhancedCreditCardScraper:
     # =========================================================================
     def scrape_creditcardgenius(self):
         """Scrape from CreditCardGenius.ca - detailed card comparisons."""
-        print("\n[1/5] Scraping CreditCardGenius.ca...")
+        logger.info("[1/5] Scraping CreditCardGenius.ca...")
         
         urls = [
             ("https://creditcardgenius.ca/best-credit-cards/cash-back", "cashback"),
@@ -287,29 +291,29 @@ class EnhancedCreditCardScraper:
         count = 0
         for url, category in urls:
             try:
-                print(f"  Fetching: {category} cards...")
+                logger.debug(f"Fetching {category} cards from {url}")
                 resp = self.session.get(url, timeout=15)
                 soup = BeautifulSoup(resp.content, 'lxml')
-                
+
                 # Find card containers
                 for div in soup.find_all(['div', 'article'], class_=re.compile(r'card|product', re.I)):
                     card = self._parse_card_element(div, "creditcardgenius")
                     if card:
                         self._add_or_merge_card(card)
                         count += 1
-                
+
                 time.sleep(self.delay)
             except Exception as e:
-                print(f"    Error: {e}")
-        
-        print(f"  Found {count} card entries")
+                logger.error(f"Error scraping {category} from CreditCardGenius: {e}", exc_info=True)
+
+        logger.info(f"Found {count} card entries from CreditCardGenius")
 
     # =========================================================================
     # Source 2: Ratehub.ca
     # =========================================================================
     def scrape_ratehub(self):
         """Scrape from Ratehub.ca - comprehensive card database."""
-        print("\n[2/5] Scraping Ratehub.ca...")
+        logger.info("[2/5] Scraping Ratehub.ca...")
         
         urls = [
             "https://www.ratehub.ca/credit-cards/cash-back",
@@ -321,28 +325,29 @@ class EnhancedCreditCardScraper:
         count = 0
         for url in urls:
             try:
-                print(f"  Fetching: {url.split('/')[-1]}...")
+                category = url.split('/')[-1]
+                logger.debug(f"Fetching {category} from Ratehub: {url}")
                 resp = self.session.get(url, timeout=15)
                 soup = BeautifulSoup(resp.content, 'lxml')
-                
+
                 for div in soup.find_all(['div', 'article'], class_=re.compile(r'card|product|listing', re.I)):
                     card = self._parse_card_element(div, "ratehub")
                     if card:
                         self._add_or_merge_card(card)
                         count += 1
-                
+
                 time.sleep(self.delay)
             except Exception as e:
-                print(f"    Error: {e}")
-        
-        print(f"  Found {count} card entries")
+                logger.error(f"Error scraping {url} from Ratehub: {e}", exc_info=True)
+
+        logger.info(f"Found {count} card entries from Ratehub")
 
     # =========================================================================
     # Source 3: MoneySense.ca
     # =========================================================================
     def scrape_moneysense(self):
         """Scrape from MoneySense.ca - annual card rankings."""
-        print("\n[3/5] Scraping MoneySense.ca...")
+        logger.info("[3/5] Scraping MoneySense.ca...")
         
         urls = [
             "https://www.moneysense.ca/spend/credit-cards/best-credit-cards-in-canada/",
@@ -353,33 +358,33 @@ class EnhancedCreditCardScraper:
         count = 0
         for url in urls:
             try:
-                print(f"  Fetching article...")
+                logger.debug(f"Fetching article from MoneySense: {url}")
                 resp = self.session.get(url, timeout=15)
                 soup = BeautifulSoup(resp.content, 'lxml')
-                
+
                 # Find card mentions in headings
                 for heading in soup.find_all(['h2', 'h3'], string=re.compile(r'(Visa|Mastercard|Card|Amex)', re.I)):
                     name = heading.get_text(strip=True)
                     name = re.sub(r'^\d+\.\s*', '', name)
-                    
+
                     if len(name) > 10:
                         card = self._create_card_from_name(name, "moneysense")
                         if card:
                             self._add_or_merge_card(card)
                             count += 1
-                
+
                 time.sleep(self.delay)
             except Exception as e:
-                print(f"    Error: {e}")
-        
-        print(f"  Found {count} card entries")
+                logger.error(f"Error scraping MoneySense article {url}: {e}", exc_info=True)
+
+        logger.info(f"Found {count} card entries from MoneySense")
 
     # =========================================================================
     # Source 4: NerdWallet Canada
     # =========================================================================
     def scrape_nerdwallet(self):
         """Scrape from NerdWallet Canada."""
-        print("\n[4/5] Scraping NerdWallet.com/ca...")
+        logger.info("[4/5] Scraping NerdWallet.com/ca...")
         
         urls = [
             "https://www.nerdwallet.com/ca/credit-cards/best-cash-back-credit-cards",
@@ -391,10 +396,11 @@ class EnhancedCreditCardScraper:
         count = 0
         for url in urls:
             try:
-                print(f"  Fetching: {url.split('/')[-1]}...")
+                category = url.split('/')[-1]
+                logger.debug(f"Fetching {category} from NerdWallet: {url}")
                 resp = self.session.get(url, timeout=15)
                 soup = BeautifulSoup(resp.content, 'lxml')
-                
+
                 for el in soup.find_all(['h2', 'h3', 'h4'], string=re.compile(r'(Visa|Mastercard|Card)', re.I)):
                     name = el.get_text(strip=True)
                     if 10 < len(name) < 100:
@@ -402,19 +408,19 @@ class EnhancedCreditCardScraper:
                         if card:
                             self._add_or_merge_card(card)
                             count += 1
-                
+
                 time.sleep(self.delay)
             except Exception as e:
-                print(f"    Error: {e}")
-        
-        print(f"  Found {count} card entries")
+                logger.error(f"Error scraping {url} from NerdWallet: {e}", exc_info=True)
+
+        logger.info(f"Found {count} card entries from NerdWallet")
 
     # =========================================================================
     # Source 5: GreedyRates.ca
     # =========================================================================
     def scrape_greedyrates(self):
         """Scrape from GreedyRates.ca - detailed reviews."""
-        print("\n[5/5] Scraping GreedyRates.ca...")
+        logger.info("[5/5] Scraping GreedyRates.ca...")
         
         urls = [
             "https://www.greedyrates.ca/blog/best-cash-back-credit-cards-canada/",
@@ -426,27 +432,27 @@ class EnhancedCreditCardScraper:
         count = 0
         for url in urls:
             try:
-                print(f"  Fetching article...")
+                logger.debug(f"Fetching article from GreedyRates: {url}")
                 resp = self.session.get(url, timeout=15)
                 soup = BeautifulSoup(resp.content, 'lxml')
-                
+
                 for heading in soup.find_all(['h2', 'h3']):
                     text = heading.get_text(strip=True)
                     if any(issuer in text for issuer in ['TD', 'RBC', 'BMO', 'CIBC', 'Scotiabank', 'Amex', 'Tangerine']):
                         name = re.sub(r'^\d+\.\s*', '', text)
                         name = re.sub(r'\s*[-–].*$', '', name)
-                        
+
                         if len(name) > 10:
                             card = self._create_card_from_name(name, "greedyrates")
                             if card:
                                 self._add_or_merge_card(card)
                                 count += 1
-                
+
                 time.sleep(self.delay)
             except Exception as e:
-                print(f"    Error: {e}")
-        
-        print(f"  Found {count} card entries")
+                logger.error(f"Error scraping GreedyRates article {url}: {e}", exc_info=True)
+
+        logger.info(f"Found {count} card entries from GreedyRates")
 
 
     # =========================================================================
@@ -533,8 +539,8 @@ class EnhancedCreditCardScraper:
     
     def enrich_with_known_data(self):
         """Enrich scraped data with known accurate information."""
-        print("\n[Enrichment] Adding known category rewards...")
-        
+        logger.info("[Enrichment] Adding known category rewards...")
+
         enriched = 0
         for key, rewards in KNOWN_CATEGORY_REWARDS.items():
             if key in self.cards:
@@ -551,8 +557,8 @@ class EnhancedCreditCardScraper:
                     ]
                     card.confidence = min(1.0, card.confidence + 0.3)
                     enriched += 1
-        
-        print(f"  Enriched {enriched} cards with known category rewards")
+
+        logger.info(f"Enriched {enriched} cards with known category rewards")
 
     # =========================================================================
     # Data Verification
@@ -560,9 +566,9 @@ class EnhancedCreditCardScraper:
     
     def verify_data(self):
         """Verify scraped data against known information."""
-        print("\n" + "=" * 60)
-        print("DATA VERIFICATION")
-        print("=" * 60)
+        logger.info("=" * 60)
+        logger.info("DATA VERIFICATION")
+        logger.info("=" * 60)
         
         self.verification_results = []
         verified = 0
@@ -616,18 +622,19 @@ class EnhancedCreditCardScraper:
                 verified += 1
                 card.last_verified = datetime.now().isoformat()
         
-        # Print summary
-        print(f"\nVerification Results:")
-        print(f"  ✓ Verified: {verified}")
-        print(f"  ⚠ Warnings: {warnings}")
-        print(f"  ✗ Errors: {errors}")
-        
+        # Log summary
+        logger.info(f"\nVerification Results:")
+        logger.info(f"  ✓ Verified: {verified}")
+        logger.warning(f"  ⚠ Warnings: {warnings}")
+        logger.error(f"  ✗ Errors: {errors}")
+
         if self.verification_results:
-            print(f"\nIssues found:")
+            logger.info(f"\nIssues found (showing first 10):")
             for result in self.verification_results[:10]:  # Show first 10
-                print(f"  [{result['status']}] {result['card']}")
+                log_func = logger.warning if result['status'] == 'WARNING' else logger.error
+                log_func(f"  [{result['status']}] {result['card']}")
                 for issue in result['issues']:
-                    print(f"    - {issue}")
+                    log_func(f"    - {issue}")
         
         return verified, warnings, errors
 
@@ -665,8 +672,8 @@ class EnhancedCreditCardScraper:
         
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(output, f, indent=2, ensure_ascii=False, default=str)
-        
-        print(f"\nSaved to {filepath}")
+
+        logger.info(f"Saved {len(self.cards)} cards to {filepath}")
 
 
 # =============================================================================
@@ -680,11 +687,12 @@ def upload_to_supabase(cards: List[CreditCard]) -> dict:
     try:
         uploader = CreditCardUploader()
         results = uploader.upload_cards(cards)
-        
-        # Print first error if any
+
+
+        # Log first error if any
         if results['errors']:
-            print(f"    First error: {results['errors'][0]['error'][:200]}")
-        
+            logger.error(f"First upload error: {results['errors'][0]['error'][:200]}")
+
         return {
             'inserted': results['cards_inserted'],
             'updated': results['cards_updated'],
@@ -692,7 +700,7 @@ def upload_to_supabase(cards: List[CreditCard]) -> dict:
             'errors': results['errors']
         }
     except Exception as e:
-        print(f"    Upload error: {str(e)[:200]}")
+        logger.error(f"Upload error: {str(e)[:200]}", exc_info=True)
         return {'inserted': 0, 'updated': 0, 'category_rewards': 0, 'errors': [{'error': str(e)}]}
 
 
@@ -701,74 +709,74 @@ def upload_to_supabase(cards: List[CreditCard]) -> dict:
 # =============================================================================
 
 def main():
-    print("=" * 60)
-    print("Enhanced Canadian Credit Card Scraper")
-    print("=" * 60)
-    print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info("=" * 60)
+    logger.info("Enhanced Canadian Credit Card Scraper")
+    logger.info("=" * 60)
+    logger.info(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     # Initialize scraper
     scraper = EnhancedCreditCardScraper()
     
     # Step 1: Scrape from all sources
-    print("\n" + "=" * 60)
-    print("STEP 1: SCRAPING DATA")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("STEP 1: SCRAPING DATA")
+    logger.info("=" * 60)
     scraper.scrape_all()
-    
+
     # Step 2: Enrich with known data
-    print("\n" + "=" * 60)
-    print("STEP 2: DATA ENRICHMENT")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("STEP 2: DATA ENRICHMENT")
+    logger.info("=" * 60)
     scraper.enrich_with_known_data()
-    
+
     # Step 3: Verify data
-    print("\n" + "=" * 60)
-    print("STEP 3: DATA VERIFICATION")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("STEP 3: DATA VERIFICATION")
+    logger.info("=" * 60)
     verified, warnings, errors = scraper.verify_data()
-    
+
     # Summary
-    print("\n" + "=" * 60)
-    print("SUMMARY")
-    print("=" * 60)
-    print(f"Total unique cards: {len(scraper.cards)}")
-    print(f"Verified: {verified}, Warnings: {warnings}, Errors: {errors}")
+    logger.info("\n" + "=" * 60)
+    logger.info("SUMMARY")
+    logger.info("=" * 60)
+    logger.info(f"Total unique cards: {len(scraper.cards)}")
+    logger.info(f"Verified: {verified}, Warnings: {warnings}, Errors: {errors}")
     
     # Show by issuer
     issuers = {}
     for card in scraper.cards.values():
         issuers[card.issuer] = issuers.get(card.issuer, 0) + 1
-    print("\nBy issuer:")
+    logger.info("\nBy issuer:")
     for issuer, count in sorted(issuers.items(), key=lambda x: -x[1]):
-        print(f"  {issuer}: {count}")
+        logger.info(f"  {issuer}: {count}")
     
     # Step 4: Save to JSON
     scraper.save_to_json("scraped_cards.json")
     
     # Step 5: Upload to Supabase
-    print("\n" + "=" * 60)
-    print("STEP 4: UPLOAD TO SUPABASE")
-    print("=" * 60)
-    
+    logger.info("\n" + "=" * 60)
+    logger.info("STEP 4: UPLOAD TO SUPABASE")
+    logger.info("=" * 60)
+
     try:
         # Only upload cards with confidence > 0.3
         confident_cards = [c for c in scraper.cards.values() if c.confidence > 0.3]
-        print(f"Uploading {len(confident_cards)} cards (confidence > 0.3)...")
-        
+        logger.info(f"Uploading {len(confident_cards)} cards (confidence > 0.3)...")
+
         result = upload_to_supabase(confident_cards)
-        print(f"  Inserted: {result['inserted']}")
-        print(f"  Updated: {result['updated']}")
-        print(f"  Category rewards: {result['category_rewards']}")
+        logger.info(f"  Inserted: {result['inserted']}")
+        logger.info(f"  Updated: {result['updated']}")
+        logger.info(f"  Category rewards: {result['category_rewards']}")
         if result['errors']:
-            print(f"  Errors: {len(result['errors'])}")
+            logger.error(f"  Errors: {len(result['errors'])}")
     except ValueError as e:
-        print(f"  Skipped: {e}")
+        logger.warning(f"  Skipped: {e}")
     except Exception as e:
-        print(f"  Upload failed: {e}")
-    
-    print("\n" + "=" * 60)
-    print("DONE!")
-    print("=" * 60)
+        logger.error(f"  Upload failed: {e}", exc_info=True)
+
+    logger.info("\n" + "=" * 60)
+    logger.info("DONE!")
+    logger.info("=" * 60)
 
 
 if __name__ == '__main__':
