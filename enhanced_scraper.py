@@ -13,10 +13,11 @@ import time
 import re
 from datetime import datetime
 from dataclasses import dataclass, field, asdict
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 import os
 from dotenv import load_dotenv
 from logger_config import setup_logger
+from program_matcher import RewardProgramMatcher
 
 load_dotenv()
 
@@ -47,7 +48,7 @@ class SignupBonus:
     timeframe_days: int
 
 
-@dataclass 
+@dataclass
 class CreditCard:
     card_key: str
     name: str
@@ -66,6 +67,10 @@ class CreditCard:
     source: str = ""  # Track where data came from
     confidence: float = 0.0  # Data confidence score 0-1
     last_verified: Optional[str] = None
+    # New taxonomy fields
+    reward_program_family: Optional[str] = None
+    currency_type: Optional[str] = None
+    program_match_confidence: float = 0.0
 
 
 # =============================================================================
@@ -138,7 +143,7 @@ KNOWN_CATEGORY_REWARDS = {
 
 class EnhancedCreditCardScraper:
     """Enhanced scraper with multiple sources and data verification."""
-    
+
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
@@ -149,6 +154,7 @@ class EnhancedCreditCardScraper:
         self.cards: Dict[str, CreditCard] = {}  # key -> card
         self.delay = 2.0
         self.verification_results = []
+        self.program_matcher = RewardProgramMatcher()  # Smart taxonomy matcher
 
     def _generate_key(self, name: str, issuer: str) -> str:
         combined = f"{issuer}-{name}"
@@ -228,7 +234,44 @@ class EnhancedCreditCardScraper:
                 return issuer
         return "Other"
 
-    def _get_program(self, name: str) -> str:
+    def _get_program_taxonomy(self, card_name: str, issuer: str) -> Tuple[str, str, str, float, float]:
+        """
+        Get comprehensive program information using smart taxonomy matching.
+
+        Args:
+            card_name: Full card name
+            issuer: Card issuer
+
+        Returns:
+            Tuple of (program_name, program_family, currency_type, base_valuation, confidence)
+        """
+        # Use smart matcher to identify program
+        program_key, details, confidence = self.program_matcher.match_and_get_details(card_name, issuer)
+
+        if details and confidence >= 0.70:
+            return (
+                details['program_name'],
+                details['program_family'],
+                details['currency_type'],
+                details['base_valuation'],
+                confidence
+            )
+        else:
+            # Fallback to legacy method for unmatched cards
+            legacy_program = self._get_program_legacy(card_name)
+            legacy_currency = self._get_currency_legacy(legacy_program, card_name)
+            legacy_valuation = self._get_point_value_legacy(legacy_currency, legacy_program)
+
+            return (
+                legacy_program,
+                legacy_program,
+                legacy_currency,
+                legacy_valuation,
+                0.3  # Lower confidence for fallback
+            )
+
+    def _get_program_legacy(self, name: str) -> str:
+        """Legacy program matching (fallback only)."""
         programs = {
             'Aeroplan': ['aeroplan'], 'Scene+': ['scene'],
             'Air Miles': ['air miles'], 'Avion': ['avion'],
@@ -247,7 +290,8 @@ class EnhancedCreditCardScraper:
                 return program
         return "Points"
 
-    def _get_currency(self, program: str, name: str) -> str:
+    def _get_currency_legacy(self, program: str, name: str) -> str:
+        """Legacy currency detection (fallback only)."""
         text = (program + " " + name).lower()
         if any(x in text for x in ['aeroplan', 'air miles', 'avion', 'westjet', 'miles']):
             return "airline_miles"
@@ -257,7 +301,8 @@ class EnhancedCreditCardScraper:
             return "cashback"
         return "points"
 
-    def _get_point_value(self, currency: str, program: str) -> float:
+    def _get_point_value_legacy(self, currency: str, program: str) -> float:
+        """Legacy point valuation (fallback only)."""
         program = program.lower()
         values = {
             "cashback": 1.0, "aeroplan": 1.8, "membership rewards": 2.0,
@@ -482,11 +527,12 @@ class EnhancedCreditCardScraper:
         issuer = self._get_issuer(name)
         if issuer == "Other":
             return None
-        
-        program = self._get_program(name)
-        currency = self._get_currency(program, name)
+
+        # Use smart taxonomy matching
+        program_name, program_family, currency_type, base_valuation, match_confidence = self._get_program_taxonomy(name, issuer)
+
         card_key = self._generate_key(name, issuer)
-        
+
         # Try to extract fee from element
         fee = 0.0
         if element:
@@ -496,24 +542,31 @@ class EnhancedCreditCardScraper:
                 fee = float(fee_match.group(1).replace(',', ''))
             elif 'no annual fee' in fee_text.lower() or 'no fee' in fee_text.lower():
                 fee = 0.0
-        
+
         # Try to extract category rewards
         category_rewards = []
         if element:
             category_rewards = self._extract_category_rewards(element.get_text())
-        
+
+        # Determine legacy reward_currency for backwards compatibility
+        legacy_currency = currency_type if currency_type in ["cashback", "airline_miles", "hotel_points"] else "points"
+
         return CreditCard(
             card_key=card_key,
             name=name,
             issuer=issuer,
-            reward_program=program,
-            reward_currency=currency,
-            point_valuation=self._get_point_value(currency, program),
+            reward_program=program_name,
+            reward_currency=legacy_currency,
+            point_valuation=base_valuation,
             annual_fee=fee,
             base_reward_rate=1.0,
             category_rewards=category_rewards,
             source=source,
             confidence=0.5,
+            # New taxonomy fields
+            reward_program_family=program_family,
+            currency_type=currency_type,
+            program_match_confidence=match_confidence,
         )
 
     def _add_or_merge_card(self, new_card: CreditCard):
@@ -589,6 +642,15 @@ class EnhancedCreditCardScraper:
             # Check 3: Valid reward currency
             if card.reward_currency not in ["cashback", "points", "airline_miles", "hotel_points"]:
                 issues.append(f"Invalid reward currency: {card.reward_currency}")
+
+            # Check 3a: Valid currency type (new taxonomy)
+            valid_currency_types = ["cashback", "airline_miles", "flexible_points", "retail_points", "entertainment_points", "travel_points", "hotel_points", "unknown"]
+            if card.currency_type and card.currency_type not in valid_currency_types:
+                issues.append(f"Invalid currency type: {card.currency_type}")
+
+            # Check 3b: Program match confidence
+            if card.program_match_confidence > 0 and card.program_match_confidence < 0.70:
+                issues.append(f"Low program match confidence: {card.program_match_confidence:.0%}")
             
             # Check 4: Compare with known cards
             if key in KNOWN_CARDS:
