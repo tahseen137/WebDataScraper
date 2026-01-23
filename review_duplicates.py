@@ -19,7 +19,7 @@ from datetime import datetime
 
 from supabase import create_client
 from logger_config import setup_logger, get_logger
-from config import load_config
+from config import DatabaseConfig
 from card_identity_manager import calculate_advanced_similarity, log_duplicate_detection
 
 
@@ -310,9 +310,8 @@ def main():
 
     # Load config
     try:
-        config = load_config()
-        supabase_url = config.get('supabase_url')
-        supabase_key = config.get('supabase_key')
+        supabase_url = DatabaseConfig.SUPABASE_URL
+        supabase_key = DatabaseConfig.SUPABASE_KEY
 
         if not supabase_url or not supabase_key:
             logger.error("Missing Supabase credentials in config")

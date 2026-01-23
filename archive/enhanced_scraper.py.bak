@@ -18,6 +18,11 @@ import os
 from dotenv import load_dotenv
 from logger_config import setup_logger
 from program_matcher import RewardProgramMatcher
+from card_identity_manager import (
+    CardFingerprintGenerator,
+    calculate_advanced_similarity,
+    EdgeCaseHandler
+)
 
 load_dotenv()
 
@@ -739,6 +744,142 @@ class EnhancedCreditCardScraper:
 
 
 # =============================================================================
+# Advanced Deduplication
+# =============================================================================
+
+def advanced_deduplicate_cards(cards: List[CreditCard], threshold: float = 0.85) -> List[CreditCard]:
+    """
+    Deduplicate cards using the advanced card identity manager.
+    
+    Uses semantic fingerprinting, Jaro-Winkler similarity, phonetic matching,
+    and edge case handling for accurate duplicate detection.
+    
+    Args:
+        cards: List of CreditCard objects
+        threshold: Similarity threshold for auto-merge (default 0.85)
+        
+    Returns:
+        Deduplicated list of CreditCard objects
+    """
+    if len(cards) <= 1:
+        return cards
+    
+    generator = CardFingerprintGenerator()
+    edge_handler = EdgeCaseHandler()
+    
+    # Generate fingerprints for all cards
+    fingerprints = {}  # fingerprint -> list of card indices
+    card_fingerprints = []  # index -> (fingerprint, components)
+    
+    for i, card in enumerate(cards):
+        try:
+            fingerprint, components = generator.generate_semantic_fingerprint(
+                card.issuer,
+                card.name,
+                card.reward_program,
+                card.annual_fee
+            )
+            card_fingerprints.append((fingerprint, components))
+            
+            if fingerprint not in fingerprints:
+                fingerprints[fingerprint] = []
+            fingerprints[fingerprint].append(i)
+        except Exception as e:
+            logger.warning(f"Failed to generate fingerprint for {card.name}: {e}")
+            card_fingerprints.append((None, {}))
+    
+    # Track which cards to keep and which to merge
+    to_remove = set()
+    merge_map = {}  # index to merge into -> list of indices to merge from
+    
+    # Step 1: Exact fingerprint matches (fastest)
+    for fingerprint, indices in fingerprints.items():
+        if len(indices) > 1:
+            # Keep first, merge rest
+            primary_idx = indices[0]
+            for dup_idx in indices[1:]:
+                if dup_idx not in to_remove:
+                    to_remove.add(dup_idx)
+                    if primary_idx not in merge_map:
+                        merge_map[primary_idx] = []
+                    merge_map[primary_idx].append(dup_idx)
+                    logger.info(f"Exact fingerprint match: '{cards[dup_idx].name}' -> '{cards[primary_idx].name}'")
+    
+    # Step 2: Fuzzy matching for remaining cards
+    remaining_indices = [i for i in range(len(cards)) if i not in to_remove]
+    
+    for i, idx1 in enumerate(remaining_indices):
+        if idx1 in to_remove:
+            continue
+            
+        card1 = cards[idx1]
+        
+        for idx2 in remaining_indices[i+1:]:
+            if idx2 in to_remove:
+                continue
+                
+            card2 = cards[idx2]
+            
+            # Quick filter: must have same issuer
+            if card1.issuer.lower() != card2.issuer.lower():
+                continue
+            
+            # Check edge cases first
+            edge_result = edge_handler.handle_special_cases(card1, card2)
+            if edge_result is False:
+                continue  # Definitely not duplicates
+            elif edge_result is True:
+                # Definitely duplicates
+                to_remove.add(idx2)
+                if idx1 not in merge_map:
+                    merge_map[idx1] = []
+                merge_map[idx1].append(idx2)
+                logger.info(f"Edge case match: '{card2.name}' -> '{card1.name}'")
+                continue
+            
+            # Calculate advanced similarity
+            similarity = calculate_advanced_similarity(
+                card1.name,
+                card2.name,
+                card1.issuer,
+                card2.issuer
+            )
+            
+            if similarity >= threshold:
+                to_remove.add(idx2)
+                if idx1 not in merge_map:
+                    merge_map[idx1] = []
+                merge_map[idx1].append(idx2)
+                logger.info(f"Fuzzy match ({similarity:.2f}): '{card2.name}' -> '{card1.name}'")
+    
+    # Step 3: Merge data from duplicates into primary cards
+    for primary_idx, dup_indices in merge_map.items():
+        primary_card = cards[primary_idx]
+        
+        for dup_idx in dup_indices:
+            dup_card = cards[dup_idx]
+            
+            # Merge category rewards (keep unique categories)
+            existing_categories = {cr.category for cr in primary_card.category_rewards}
+            for cr in dup_card.category_rewards:
+                if cr.category not in existing_categories:
+                    primary_card.category_rewards.append(cr)
+                    existing_categories.add(cr.category)
+            
+            # Keep signup bonus if primary doesn't have one
+            if not primary_card.signup_bonus and dup_card.signup_bonus:
+                primary_card.signup_bonus = dup_card.signup_bonus
+            
+            # Increase confidence
+            primary_card.confidence = min(1.0, primary_card.confidence + 0.1)
+    
+    # Step 4: Build deduplicated list
+    deduplicated = [cards[i] for i in range(len(cards)) if i not in to_remove]
+    
+    return deduplicated
+
+
+# =============================================================================
 # Supabase Upload
 # =============================================================================
 
@@ -784,6 +925,23 @@ def main():
     logger.info("STEP 1: SCRAPING DATA")
     logger.info("=" * 60)
     scraper.scrape_all()
+
+    # Step 1.5: Advanced Duplicate Prevention
+    logger.info("\n" + "=" * 60)
+    logger.info("STEP 1.5: ADVANCED DUPLICATE PREVENTION")
+    logger.info("=" * 60)
+    
+    cards_list = list(scraper.cards.values())
+    logger.info(f"Before deduplication: {len(cards_list)} cards")
+    
+    # Use advanced deduplication with semantic fingerprinting
+    deduplicated_cards = advanced_deduplicate_cards(cards_list)
+    
+    logger.info(f"After deduplication: {len(deduplicated_cards)} cards")
+    logger.info(f"Removed {len(cards_list) - len(deduplicated_cards)} duplicates")
+    
+    # Update scraper.cards with deduplicated list
+    scraper.cards = {card.card_key: card for card in deduplicated_cards}
 
     # Step 2: Enrich with known data
     logger.info("\n" + "=" * 60)

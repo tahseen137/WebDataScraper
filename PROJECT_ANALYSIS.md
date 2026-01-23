@@ -131,7 +131,8 @@ WebDataScraper/
 │   └── scraper.py                  # Legacy scraper
 │
 ├── Data Management
-│   ├── seed_known_cards.py         # Curated 34 cards (697 lines)
+│   ├── seed_cards.py               # Upload curated cards from JSON
+│   ├── data/curated_cards.json     # Curated 34 cards data
 │   ├── supabase_client.py          # Database client (97 lines)
 │   └── credit_card_uploader.py     # Upload logic (215 lines)
 │
@@ -175,7 +176,7 @@ WebDataScraper/
                                 │
                                 ▼
                        ┌────────────────┐
-                       │  Known Cards   │◀────── seed_known_cards.py
+                       │  Known Cards   │◀────── data/curated_cards.json
                        │  (34 curated)  │
                        └────────┬───────┘
                                 │
@@ -222,7 +223,8 @@ WebDataScraper/
 | File | Lines | Purpose |
 |------|-------|---------|
 | enhanced_scraper.py | 776 | Main scraping orchestrator |
-| seed_known_cards.py | 697 | Curated card database |
+| data/curated_cards.json | - | Curated card database (34 cards) |
+| seed_cards.py | 90 | Upload curated cards to database |
 | credit_card_uploader.py | 215 | Database upload logic |
 | supabase_client.py | 97 | Supabase integration |
 | Other utilities | <100 ea | Support scripts |
@@ -347,7 +349,8 @@ signup_bonuses (
 ```
 
 #### 6. Curated Card Database
-**File**: `seed_known_cards.py`
+**File**: `data/curated_cards.json`
+**Loader**: `seed_cards.py`
 
 **Card Count**: 34 cards
 
@@ -559,7 +562,7 @@ categories = ['groceries', 'dining', 'gas', 'travel',
 ### Low Priority
 
 #### 7. Manual Seeding
-**Debt**: seed_known_cards.py requires manual updates
+**Debt**: data/curated_cards.json requires manual updates
 
 **Solution**: Admin UI for card management
 
@@ -884,7 +887,7 @@ supabase>=2.0.0
 2. `pip install -r requirements.txt`
 3. Copy `.env.example` → `.env`
 4. Add Supabase credentials
-5. Run `python seed_known_cards.py`
+5. Run `python seed_cards.py`
 
 **Development Tools**:
 - ❌ No linting (flake8, pylint)

@@ -61,7 +61,7 @@ LOG_DIR=logs                        # Log file directory
 ### 3. Seed the database with curated cards
 
 ```bash
-python seed_known_cards.py
+python seed_cards.py
 ```
 
 This uploads 34 Canadian credit cards with full category rewards and signup bonuses.
@@ -70,7 +70,7 @@ This uploads 34 Canadian credit cards with full category rewards and signup bonu
 
 | Script | Description |
 |--------|-------------|
-| `seed_known_cards.py` | Upload curated cards with accurate rewards (recommended) |
+| `seed_cards.py` | Upload curated cards from data/curated_cards.json (recommended) |
 | `enhanced_scraper.py` | Scrape cards from multiple websites |
 | `check_duplicates.py` | Check for duplicate cards in database |
 | `cleanup_duplicates.py` | Remove cards without category rewards |
@@ -220,27 +220,27 @@ print(f"Errors per minute: {summary['errors_per_minute']}")
 
 ## Adding New Cards
 
-Edit `seed_known_cards.py` and add to the `KNOWN_CARDS` list:
+Edit `data/curated_cards.json` and add to the `cards` array:
 
-```python
+```json
 {
     "card_key": "issuer-card-name",
     "name": "Card Display Name",
     "issuer": "Issuer Name",
     "reward_program": "Program Name",
-    "reward_currency": "cashback",  # or "points", "airline_miles"
+    "reward_currency": "cashback",
     "point_valuation": 1.0,
     "annual_fee": 0,
     "base_reward_rate": 1.0,
-    "base_reward_unit": "percent",  # or "multiplier"
+    "base_reward_unit": "percent",
     "category_rewards": [
-        {"category": "groceries", "multiplier": 2.0, "reward_unit": "percent", "description": "2% on groceries"},
+        {"category": "groceries", "multiplier": 2.0, "reward_unit": "percent", "description": "2% on groceries"}
     ],
     "signup_bonus": {"bonus_amount": 200, "bonus_currency": "cashback", "spend_requirement": 1000, "timeframe_days": 90}
 }
 ```
 
-Then run `python seed_known_cards.py` to update the database.
+Then run `python seed_cards.py` to update the database.
 
 ## Spending Categories
 

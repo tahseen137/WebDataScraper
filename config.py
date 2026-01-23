@@ -59,6 +59,17 @@ class DatabaseConfig:
     SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 
 
+def load_config():
+    """Load configuration as a dictionary."""
+    return {
+        'supabase_url': DatabaseConfig.SUPABASE_URL,
+        'supabase_key': DatabaseConfig.SUPABASE_KEY,
+        'scraper_delay': ScraperConfig.DEFAULT_DELAY,
+        'scraper_timeout': ScraperConfig.TIMEOUT,
+        'log_level': ScraperConfig.LOG_LEVEL,
+    }
+
+
 # Scraping sources configuration
 SCRAPING_SOURCES = {
     'creditcardgenius': {

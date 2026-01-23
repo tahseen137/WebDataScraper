@@ -13,7 +13,7 @@ Readiness Score: 95/100
 import re
 import hashlib
 import unicodedata
-from typing import Optional, List, Dict, Tuple, Set, Any
+from typing import Optional, List, Dict, Tuple, Set, Any, TYPE_CHECKING
 from datetime import datetime
 from dataclasses import dataclass, field
 import logging
@@ -29,8 +29,11 @@ from supabase import create_client, Client
 
 # Internal imports
 from logger_config import setup_logger, get_logger
-from enhanced_scraper import CreditCard, CategoryReward, SignupBonus
 from error_handler import ErrorTracker
+
+# Type checking imports (avoid circular import at runtime)
+if TYPE_CHECKING:
+    from enhanced_scraper import CreditCard, CategoryReward, SignupBonus
 
 
 # ============================================================================
@@ -491,8 +494,8 @@ class EdgeCaseHandler:
     @classmethod
     def handle_special_cases(
         cls,
-        card1: CreditCard,
-        card2: CreditCard
+        card1: "CreditCard",
+        card2: "CreditCard"
     ) -> Optional[bool]:
         """
         Check for edge cases before normal similarity matching.
@@ -610,7 +613,7 @@ class SmartDuplicateDetector:
 
     def _find_fuzzy_candidates(
         self,
-        card: CreditCard,
+        card: "CreditCard",
         components: Dict[str, Any]
     ) -> List[Dict]:
         """
@@ -650,7 +653,7 @@ class SmartDuplicateDetector:
 
     def find_duplicates_multilevel(
         self,
-        card: CreditCard,
+        card: "CreditCard",
         thresholds: Optional[Dict[str, float]] = None
     ) -> List[Tuple[Dict, float, str]]:
         """
@@ -742,16 +745,21 @@ class SmartDuplicateDetector:
 
         return matches
 
-    def _dict_to_credit_card(self, card_dict: Dict) -> CreditCard:
+    def _dict_to_credit_card(self, card_dict: Dict) -> "CreditCard":
         """Convert database dictionary to CreditCard object."""
+        # Import at runtime to avoid circular import
+        from enhanced_scraper import CreditCard
         return CreditCard(
+            card_key=card_dict.get('card_key', ''),
             name=card_dict.get('name', ''),
             issuer=card_dict.get('issuer', ''),
             annual_fee=card_dict.get('annual_fee', 0.0),
             reward_program=card_dict.get('reward_program', ''),
+            reward_currency=card_dict.get('reward_currency', 'points'),
+            point_valuation=card_dict.get('point_valuation', 1.0),
+            base_reward_rate=card_dict.get('base_reward_rate', 1.0),
             category_rewards=[],  # Not needed for duplicate detection
             signup_bonus=None,  # Not needed for duplicate detection
-            highlights=card_dict.get('highlights', []),
             source=card_dict.get('source', 'unknown')
         )
 
@@ -893,7 +901,7 @@ class FingerprintCache:
 # ============================================================================
 
 def batch_find_duplicates(
-    cards: List[CreditCard],
+    cards: List["CreditCard"],
     db_connection: Client,
     batch_size: int = 50
 ) -> Dict[str, List[Tuple[Dict, float, str]]]:

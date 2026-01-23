@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python enhanced_scraper.py:*)",
+      "Bash(python review_duplicates.py:*)",
+      "Bash(python show_duplicates_report.py:*)"
+    ]
+  }
+}

@@ -446,7 +446,7 @@ COMMIT;
   - [ ] Query reward_programs table
   - [ ] Return UUID
   - [ ] Cache results
-- [ ] Update seed_known_cards.py
+- [ ] Update data/curated_cards.json
   - [ ] Map each card's reward_program to program_id
   - [ ] Include reward_program_family
   - [ ] Verify against reward_programs table
@@ -492,7 +492,7 @@ COMMIT;
 
 #### Validation Tests
 
-- [ ] Cross-reference with seed_known_cards.py
+- [ ] Cross-reference with data/curated_cards.json
   - [ ] All 34 cards have matching programs
   - [ ] Valuations match manual data
 - [ ] Verify against official bank websites

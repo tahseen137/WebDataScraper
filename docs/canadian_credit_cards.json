@@ -1,0 +1,536 @@
+{
+  "credit_cards": [
+    {
+      "name": "American Express Cobalt Card",
+      "issuer": "American Express",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "American Express Gold Rewards Card",
+      "issuer": "American Express",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "American Express Platinum Card",
+      "issuer": "American Express",
+      "category": "Premium Travel"
+    },
+    {
+      "name": "American Express Green Card",
+      "issuer": "American Express",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "American Express Essential Credit Card",
+      "issuer": "American Express",
+      "category": "No Fee"
+    },
+    {
+      "name": "SimplyCash Preferred Card from American Express",
+      "issuer": "American Express",
+      "category": "Cash Back"
+    },
+    {
+      "name": "SimplyCash Card from American Express",
+      "issuer": "American Express",
+      "category": "Cash Back"
+    },
+    {
+      "name": "American Express Aeroplan Card",
+      "issuer": "American Express",
+      "category": "Airline Miles"
+    },
+    {
+      "name": "American Express Aeroplan Reserve Card",
+      "issuer": "American Express",
+      "category": "Premium Airline Miles"
+    },
+    {
+      "name": "Marriott Bonvoy American Express Card",
+      "issuer": "American Express",
+      "category": "Hotel Rewards"
+    },
+    {
+      "name": "Marriott Bonvoy Business American Express Card",
+      "issuer": "American Express",
+      "category": "Business Hotel Rewards"
+    },
+    {
+      "name": "American Express Business Edge Card",
+      "issuer": "American Express",
+      "category": "Business Rewards"
+    },
+    {
+      "name": "American Express Business Platinum Card",
+      "issuer": "American Express",
+      "category": "Premium Business"
+    },
+    {
+      "name": "American Express Aeroplan Business Card",
+      "issuer": "American Express",
+      "category": "Business Airline Miles"
+    },
+    {
+      "name": "American Express Aeroplan Business Reserve Card",
+      "issuer": "American Express",
+      "category": "Premium Business Airline Miles"
+    },
+    {
+      "name": "TD Cash Back Visa Infinite Card",
+      "issuer": "TD Bank",
+      "category": "Cash Back"
+    },
+    {
+      "name": "TD Cash Back Visa Card",
+      "issuer": "TD Bank",
+      "category": "No Fee Cash Back"
+    },
+    {
+      "name": "TD Aeroplan Visa Infinite Card",
+      "issuer": "TD Bank",
+      "category": "Airline Miles"
+    },
+    {
+      "name": "TD Aeroplan Visa Platinum Card",
+      "issuer": "TD Bank",
+      "category": "Airline Miles"
+    },
+    {
+      "name": "TD Aeroplan Visa Infinite Privilege Card",
+      "issuer": "TD Bank",
+      "category": "Premium Airline Miles"
+    },
+    {
+      "name": "TD First Class Travel Visa Infinite Card",
+      "issuer": "TD Bank",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "TD Rewards Visa Card",
+      "issuer": "TD Bank",
+      "category": "No Fee Rewards"
+    },
+    {
+      "name": "TD Platinum Travel Visa Card",
+      "issuer": "TD Bank",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "TD U.S. Dollar Visa Card",
+      "issuer": "TD Bank",
+      "category": "U.S. Dollar"
+    },
+    {
+      "name": "TD Aeroplan Visa Business Card",
+      "issuer": "TD Bank",
+      "category": "Business Airline Miles"
+    },
+    {
+      "name": "TD Cash Back Visa Business Card",
+      "issuer": "TD Bank",
+      "category": "Business Cash Back"
+    },
+    {
+      "name": "TD Business Travel Visa Card",
+      "issuer": "TD Bank",
+      "category": "Business Travel"
+    },
+    {
+      "name": "TD Business Value Visa Card",
+      "issuer": "TD Bank",
+      "category": "Business Low Rate"
+    },
+    {
+      "name": "RBC Avion Visa Infinite Card",
+      "issuer": "RBC",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "RBC Avion Visa Platinum Card",
+      "issuer": "RBC",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "RBC Avion Visa Infinite Privilege Card",
+      "issuer": "RBC",
+      "category": "Premium Travel"
+    },
+    {
+      "name": "RBC British Airways Visa Infinite Card",
+      "issuer": "RBC",
+      "category": "Airline Miles"
+    },
+    {
+      "name": "RBC Cathay Pacific Visa Platinum Card",
+      "issuer": "RBC",
+      "category": "Airline Miles"
+    },
+    {
+      "name": "RBC ION Visa Card",
+      "issuer": "RBC",
+      "category": "No Fee Rewards"
+    },
+    {
+      "name": "RBC ION+ Visa Card",
+      "issuer": "RBC",
+      "category": "Low Fee Rewards"
+    },
+    {
+      "name": "RBC Cash Back Preferred World Elite Mastercard",
+      "issuer": "RBC",
+      "category": "Cash Back"
+    },
+    {
+      "name": "RBC Rewards+ Visa Card",
+      "issuer": "RBC",
+      "category": "No Fee Rewards"
+    },
+    {
+      "name": "RBC WestJet World Elite Mastercard",
+      "issuer": "RBC",
+      "category": "Airline Rewards"
+    },
+    {
+      "name": "RBC Avion Visa Infinite Business Card",
+      "issuer": "RBC",
+      "category": "Business Travel"
+    },
+    {
+      "name": "CIBC Aventura Visa Infinite Card",
+      "issuer": "CIBC",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "CIBC Aventura Gold Visa Card",
+      "issuer": "CIBC",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "CIBC Aventura Visa Infinite Privilege Card",
+      "issuer": "CIBC",
+      "category": "Premium Travel"
+    },
+    {
+      "name": "CIBC Aeroplan Visa Card",
+      "issuer": "CIBC",
+      "category": "Airline Miles"
+    },
+    {
+      "name": "CIBC Aeroplan Visa Infinite Card",
+      "issuer": "CIBC",
+      "category": "Airline Miles"
+    },
+    {
+      "name": "CIBC Aeroplan Visa Infinite Privilege Card",
+      "issuer": "CIBC",
+      "category": "Premium Airline Miles"
+    },
+    {
+      "name": "CIBC Dividend Visa Infinite Card",
+      "issuer": "CIBC",
+      "category": "Cash Back"
+    },
+    {
+      "name": "CIBC Select Visa Card",
+      "issuer": "CIBC",
+      "category": "No Fee"
+    },
+    {
+      "name": "CIBC Costco Mastercard",
+      "issuer": "CIBC",
+      "category": "Retail Rewards"
+    },
+    {
+      "name": "CIBC Costco World Elite Mastercard",
+      "issuer": "CIBC",
+      "category": "Retail Cash Back"
+    },
+    {
+      "name": "CIBC Aventura Visa Business Card",
+      "issuer": "CIBC",
+      "category": "Business Travel"
+    },
+    {
+      "name": "CIBC Aeroplan Visa Business Card",
+      "issuer": "CIBC",
+      "category": "Business Airline Miles"
+    },
+    {
+      "name": "Scotiabank Passport Visa Infinite Card",
+      "issuer": "Scotiabank",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "Scotiabank Passport Visa Infinite Privilege Card",
+      "issuer": "Scotiabank",
+      "category": "Premium Travel"
+    },
+    {
+      "name": "Scotia Momentum Visa Infinite Card",
+      "issuer": "Scotiabank",
+      "category": "Cash Back"
+    },
+    {
+      "name": "Scotia Momentum No-Fee Visa Card",
+      "issuer": "Scotiabank",
+      "category": "No Fee Cash Back"
+    },
+    {
+      "name": "Scotiabank Gold American Express Card",
+      "issuer": "Scotiabank",
+      "category": "Rewards"
+    },
+    {
+      "name": "Scotiabank Platinum American Express Card",
+      "issuer": "Scotiabank",
+      "category": "Low Interest"
+    },
+    {
+      "name": "Scotiabank American Express Card",
+      "issuer": "Scotiabank",
+      "category": "No Fee"
+    },
+    {
+      "name": "Scotiabank Scene+ Visa Card",
+      "issuer": "Scotiabank",
+      "category": "Entertainment Rewards"
+    },
+    {
+      "name": "Scotiabank Scene+ Visa Infinite Card",
+      "issuer": "Scotiabank",
+      "category": "Entertainment Rewards"
+    },
+    {
+      "name": "Scotiabank U.S. Dollar Visa Card",
+      "issuer": "Scotiabank",
+      "category": "U.S. Dollar"
+    },
+    {
+      "name": "Scotiabank Passport Visa Infinite Business Card",
+      "issuer": "Scotiabank",
+      "category": "Business Travel"
+    },
+    {
+      "name": "BMO CashBack World Elite Mastercard",
+      "issuer": "BMO",
+      "category": "Cash Back"
+    },
+    {
+      "name": "BMO CashBack Mastercard",
+      "issuer": "BMO",
+      "category": "No Fee Cash Back"
+    },
+    {
+      "name": "BMO AIR MILES World Elite Mastercard",
+      "issuer": "BMO",
+      "category": "Rewards"
+    },
+    {
+      "name": "BMO AIR MILES Mastercard",
+      "issuer": "BMO",
+      "category": "No Fee Rewards"
+    },
+    {
+      "name": "BMO eclipse Visa Infinite Card",
+      "issuer": "BMO",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "BMO eclipse Visa Infinite Privilege Card",
+      "issuer": "BMO",
+      "category": "Premium Travel"
+    },
+    {
+      "name": "BMO Ascend World Elite Mastercard",
+      "issuer": "BMO",
+      "category": "Premium Travel"
+    },
+    {
+      "name": "BMO Preferred Rate Mastercard",
+      "issuer": "BMO",
+      "category": "Low Interest"
+    },
+    {
+      "name": "BMO SPC CashBack Mastercard",
+      "issuer": "BMO",
+      "category": "Student Cash Back"
+    },
+    {
+      "name": "BMO AIR MILES Business Mastercard",
+      "issuer": "BMO",
+      "category": "Business Rewards"
+    },
+    {
+      "name": "National Bank World Elite Mastercard",
+      "issuer": "National Bank",
+      "category": "Premium Rewards"
+    },
+    {
+      "name": "National Bank Platinum Mastercard",
+      "issuer": "National Bank",
+      "category": "Rewards"
+    },
+    {
+      "name": "National Bank Syncro Mastercard",
+      "issuer": "National Bank",
+      "category": "Low Interest"
+    },
+    {
+      "name": "Tangerine Money-Back Credit Card",
+      "issuer": "Tangerine",
+      "category": "No Fee Cash Back"
+    },
+    {
+      "name": "Tangerine Money-Back World Mastercard",
+      "issuer": "Tangerine",
+      "category": "Cash Back"
+    },
+    {
+      "name": "Neo Card",
+      "issuer": "Neo Financial",
+      "category": "No Fee Cash Back"
+    },
+    {
+      "name": "Neo Secured Mastercard",
+      "issuer": "Neo Financial",
+      "category": "Secured"
+    },
+    {
+      "name": "Canadian Tire Triangle Mastercard",
+      "issuer": "Canadian Tire",
+      "category": "Retail Rewards"
+    },
+    {
+      "name": "Canadian Tire Triangle World Elite Mastercard",
+      "issuer": "Canadian Tire",
+      "category": "Retail Rewards"
+    },
+    {
+      "name": "Canadian Tire Options Mastercard",
+      "issuer": "Canadian Tire",
+      "category": "Retail Low Interest"
+    },
+    {
+      "name": "MBNA Rewards Platinum Plus Mastercard",
+      "issuer": "MBNA",
+      "category": "Rewards"
+    },
+    {
+      "name": "MBNA Rewards World Elite Mastercard",
+      "issuer": "MBNA",
+      "category": "Premium Rewards"
+    },
+    {
+      "name": "MBNA True Line Gold Mastercard",
+      "issuer": "MBNA",
+      "category": "Low Interest"
+    },
+    {
+      "name": "MBNA True Line Mastercard",
+      "issuer": "MBNA",
+      "category": "Low Interest"
+    },
+    {
+      "name": "Capital One Aspire Cash Platinum Mastercard",
+      "issuer": "Capital One",
+      "category": "Cash Back"
+    },
+    {
+      "name": "Capital One Aspire Travel Platinum Mastercard",
+      "issuer": "Capital One",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "Capital One Guaranteed Secured Mastercard",
+      "issuer": "Capital One",
+      "category": "Secured"
+    },
+    {
+      "name": "Capital One Low Rate Platinum Mastercard",
+      "issuer": "Capital One",
+      "category": "Low Interest"
+    },
+    {
+      "name": "Rogers Red World Elite Mastercard",
+      "issuer": "Rogers Bank",
+      "category": "Cash Back"
+    },
+    {
+      "name": "Rogers Red Mastercard",
+      "issuer": "Rogers Bank",
+      "category": "No Fee Cash Back"
+    },
+    {
+      "name": "Rogers Fido Mastercard",
+      "issuer": "Rogers Bank",
+      "category": "No Fee Cash Back"
+    },
+    {
+      "name": "PC Financial World Elite Mastercard",
+      "issuer": "PC Financial",
+      "category": "Retail Rewards"
+    },
+    {
+      "name": "PC Financial Mastercard",
+      "issuer": "PC Financial",
+      "category": "No Fee Retail Rewards"
+    },
+    {
+      "name": "Simplii Financial Cash Back Visa Card",
+      "issuer": "Simplii Financial",
+      "category": "No Fee Cash Back"
+    },
+    {
+      "name": "Desjardins Cash Back World Elite Mastercard",
+      "issuer": "Desjardins",
+      "category": "Cash Back"
+    },
+    {
+      "name": "Desjardins Odyssey Visa Infinite Privilege Card",
+      "issuer": "Desjardins",
+      "category": "Premium Travel"
+    },
+    {
+      "name": "Desjardins Odyssey Gold Visa Card",
+      "issuer": "Desjardins",
+      "category": "Travel Rewards"
+    },
+    {
+      "name": "HSBC World Elite Mastercard",
+      "issuer": "HSBC",
+      "category": "Premium Travel"
+    },
+    {
+      "name": "HSBC Premier World Elite Mastercard",
+      "issuer": "HSBC",
+      "category": "Premium Rewards"
+    },
+    {
+      "name": "Walmart Rewards Mastercard",
+      "issuer": "Walmart/Triangle",
+      "category": "Retail Rewards"
+    },
+    {
+      "name": "Amazon.ca Rewards Visa Card",
+      "issuer": "Chase Canada",
+      "category": "Retail Cash Back"
+    },
+    {
+      "name": "Brim World Elite Mastercard",
+      "issuer": "Brim Financial",
+      "category": "Premium Travel"
+    },
+    {
+      "name": "KOHO Prepaid Mastercard",
+      "issuer": "KOHO",
+      "category": "Prepaid"
+    },
+    {
+      "name": "Home Trust Preferred Visa",
+      "issuer": "Home Trust",
+      "category": "Secured"
+    }
+  ],
+  "total_count": 106,
+  "last_updated": "2026-01-20"
+}
