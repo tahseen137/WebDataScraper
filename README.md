@@ -1,262 +1,227 @@
-# Canadian Credit Card Scraper
+# 💳 WebDataScraper
 
-A robust Python toolkit for scraping and managing Canadian credit card data, designed to populate the Rewards Optimizer database with production-ready reliability features.
+**Production-ready Python toolkit for scraping Canadian credit card data and uploading to Supabase.**
 
-## Features
+Built to populate the [Rewards Optimizer](https://github.com/tahseen137/rewards-optimizer) database with comprehensive, accurate credit card information including category rewards, signup bonuses, and point valuations.
 
-### Core Functionality
-- **Multi-source scraping**: Collects data from Ratehub, MoneySense, NerdWallet, CreditCardGenius, and GreedyRates
-- **Curated card database**: 34+ Canadian credit cards with accurate category rewards
-- **Supabase integration**: Direct upload to your database
-- **Data verification**: Validates scraped data against known card information
-- **Duplicate detection**: Identifies and handles duplicate entries
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### Production Features ✨ NEW
-- **Professional logging**: Structured logging with file and console handlers
-- **Smart rate limiting**: Domain-based throttling with exponential backoff
-- **Retry logic**: Automatic retry with configurable backoff on failures
-- **Error tracking**: Comprehensive error monitoring and recovery
-- **Configuration management**: All settings via environment variables
-- **Unit tests**: 20+ tests with code coverage reporting
+## ✨ Features
 
-## Quick Start
+- **🎯 Curated Data** - 34+ Canadian credit cards with verified category rewards
+- **🔄 Multi-Source Scraping** - Ratehub, MoneySense, NerdWallet, CreditCardGenius, GreedyRates
+- **☁️ Supabase Integration** - Direct database upload with duplicate prevention
+- **🛡️ Production Ready** - Rate limiting, retry logic, error tracking, structured logging
+- **✅ Tested** - 20+ unit tests with coverage reporting
+- **⚙️ Configurable** - Environment-based configuration for all settings
 
-### 1. Install dependencies
+## 🚀 Quick Start
+
+### 1. Installation
 
 ```bash
+git clone https://github.com/tahseen137/WebDataScraper.git
+cd WebDataScraper
 pip install -r requirements.txt
 ```
 
-### 2. Configure environment
+### 2. Configuration
 
-Copy `.env.example` to `.env` and configure your settings:
+Copy and configure your environment:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env`:
+Edit `.env` with your Supabase credentials:
+
 ```env
-# Supabase Configuration (Required)
 SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_KEY=your-service-role-key
-
-# Scraper Configuration (Optional)
-SCRAPER_DELAY=2.0                    # Delay between requests (seconds)
-SCRAPER_MIN_DELAY=1.0               # Minimum delay
-SCRAPER_MAX_DELAY=10.0              # Maximum delay
-SCRAPER_TIMEOUT=15                  # Request timeout
-SCRAPER_MAX_RETRIES=3               # Maximum retry attempts
-SCRAPER_RETRY_BACKOFF=2.0           # Exponential backoff multiplier
-MIN_CONFIDENCE_THRESHOLD=0.3        # Minimum confidence for uploading
-
-# Logging Configuration (Optional)
-LOG_LEVEL=INFO                      # DEBUG, INFO, WARNING, ERROR, CRITICAL
-LOG_TO_FILE=true                    # Write logs to file
-LOG_DIR=logs                        # Log file directory
 ```
 
-> **Note**: Use the `service_role` key (not `anon` key) for write access. Find it in Supabase Dashboard → Settings → API.
+> **Note:** Use the `service_role` key (not `anon` key) from Supabase Dashboard → Settings → API
 
-### 3. Seed the database with curated cards
+### 3. Seed Database
+
+Upload 34 curated Canadian credit cards:
 
 ```bash
 python seed_cards.py
 ```
 
-This uploads 34 Canadian credit cards with full category rewards and signup bonuses.
+That's it! Your database now contains production-ready credit card data.
 
-## Scripts
+## 📊 What's Included
 
-| Script | Description |
-|--------|-------------|
-| `seed_cards.py` | Upload curated cards from data/curated_cards.json (recommended) |
-| `enhanced_scraper.py` | Scrape cards from multiple websites |
-| `check_duplicates.py` | Check for duplicate cards in database |
-| `cleanup_duplicates.py` | Remove cards without category rewards |
-| `deduplicate_cards.py` | Advanced deduplication utilities |
+### 34 Canadian Credit Cards
 
-## Architecture
+- **American Express** (6) - Cobalt, Gold, Platinum, Aeroplan Reserve, SimplyCash
+- **BMO** (4) - CashBack, Eclipse, AIR MILES, CashBack World Elite
+- **CIBC** (4) - Dividend, Dividend Infinite, Aventura, Aeroplan
+- **Scotiabank** (3) - Gold Amex, Momentum, Passport
+- **TD** (3) - Aeroplan, Cash Back, First Class Travel
+- **RBC** (3) - Avion, Cash Back, WestJet
+- **Plus** - Neo, Desjardins, MBNA, National Bank, PC Financial, Rogers, Simplii, Tangerine, Triangle
 
-### Core Modules
+### Complete Data Coverage
 
-- **`config.py`** - Centralized configuration management
-- **`logger_config.py`** - Logging setup with file and console handlers
-- **`rate_limiter.py`** - Adaptive rate limiting with domain tracking
-- **`retry_util.py`** - Retry decorators and session with exponential backoff
-- **`error_handler.py`** - Custom exceptions and error tracking
-- **`credit_card_scraper.py`** - Base scraper with parsing utilities
-- **`enhanced_scraper.py`** - Multi-source scraper with verification
-- **`credit_card_uploader.py`** - Supabase database interface
-- **`supabase_client.py`** - Generic Supabase client
+Each card includes:
+- ✅ Base reward rates (cashback/points/miles)
+- ✅ Category bonuses (groceries, dining, gas, travel, etc.)
+- ✅ Signup bonuses with requirements
+- ✅ Annual fees and point valuations
+- ✅ Reward program associations
 
-### Data Models
+## 🛠️ Tech Stack
 
-```python
-CreditCard
-├── card_key: str (unique identifier)
-├── name: str
-├── issuer: str
-├── reward_program: str
-├── reward_currency: str (cashback|points|airline_miles)
-├── point_valuation: float
-├── annual_fee: float
-├── base_reward_rate: float
-├── category_rewards: List[CategoryReward]
-└── signup_bonus: Optional[SignupBonus]
+- **Language:** Python 3.10+
+- **Web Scraping:** BeautifulSoup4, Requests, Newspaper3k
+- **Database:** Supabase (PostgreSQL)
+- **Data Processing:** Pandas, Jellyfish (fuzzy matching)
+- **Testing:** Pytest with coverage
+- **Configuration:** python-dotenv
 
-CategoryReward
-├── category: str
-├── multiplier: float
-├── reward_unit: str (percent|multiplier)
-├── description: str
-└── spend_limit: Optional[float]
+## 📖 Documentation
 
-SignupBonus
-├── bonus_amount: int
-├── bonus_currency: str
-├── spend_requirement: float
-└── timeframe_days: int
-```
+- **[SCRIPTS.md](SCRIPTS.md)** - Reference for all 37 Python scripts
+- **[.env.example](.env.example)** - Configuration options
+- **[tests/README.md](tests/README.md)** - Testing guide
+- **[docs/](docs/)** - Additional documentation
 
-## Database Schema
-
-The scraper populates these Supabase tables:
-
-- **cards**: Credit card info (name, issuer, fees, base rewards)
-- **category_rewards**: Bonus rates for spending categories
-- **signup_bonuses**: Welcome offers for new cardholders
-
-## Testing
-
-### Run tests
+## 🧪 Testing
 
 ```bash
 # Run all tests
 pytest
 
-# Run with coverage
+# With coverage
 pytest --cov=. --cov-report=html
 
-# Run specific test file
-pytest tests/test_scraper.py
-
-# Run tests matching a pattern
-pytest -k "parse"
+# Specific tests
+pytest tests/test_scraper.py -v
 ```
 
-View coverage report: `htmlcov/index.html`
+## 📝 Usage Examples
 
-See [`tests/README.md`](tests/README.md) for more testing details.
+### Seed Curated Cards (Recommended)
 
-## Included Cards
+```bash
+python seed_cards.py
+```
 
-34 cards from major Canadian issuers:
+### Scrape Fresh Data
 
-- **American Express** (6): Cobalt, Gold, Platinum, Aeroplan Reserve, SimplyCash
-- **BMO** (4): CashBack, Eclipse, AIR MILES World Elite, CashBack World Elite
-- **CIBC** (4): Dividend, Dividend Infinite, Aventura, Aeroplan
-- **Scotiabank** (3): Gold Amex, Momentum, Passport
-- **TD** (3): Aeroplan, Cash Back, First Class Travel
-- **RBC** (3): Avion, Cash Back, WestJet
-- **Neo Financial** (2): Neo Mastercard, World Elite
-- **Desjardins** (2): Odyssey, Cash Back World Elite
-- Plus: MBNA, National Bank, PC Financial, Rogers, Simplii, Tangerine, Triangle
+```bash
+python scrape_workflow.py
+```
 
-## Advanced Usage
+### Check for Duplicates
+
+```bash
+python check_duplicates.py
+```
 
 ### Custom Configuration
 
-Create a custom configuration by setting environment variables:
+Set environment variables or edit `.env`:
+
+```env
+SCRAPER_DELAY=5.0          # Slow down requests
+LOG_LEVEL=DEBUG            # Detailed logging
+SCRAPER_MAX_RETRIES=5      # More retry attempts
+```
+
+## 🏗️ Architecture
+
+### Core Modules
+
+| Module | Purpose |
+|--------|---------|
+| `config.py` | Environment-based configuration |
+| `scraper.py` | HTML parsing and data extraction |
+| `credit_card_uploader.py` | Supabase database operations |
+| `logger_config.py` | Structured logging setup |
+| `rate_limiter.py` | Domain-based rate limiting |
+| `retry_util.py` | Exponential backoff retry logic |
+
+### Data Flow
+
+```
+┌─────────────────┐
+│  Web Sources    │
+│  (5 websites)   │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   Scrapers      │
+│  (BeautifulSoup)│
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Data Merger    │
+│  & Validator    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Duplicate      │
+│  Prevention     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   Supabase      │
+│   Database      │
+└─────────────────┘
+```
+
+## 🗃️ Database Schema
+
+The scraper populates three Supabase tables:
+
+### `cards`
+- `id`, `card_key` (unique), `name`, `issuer`
+- `reward_program`, `reward_currency`, `point_valuation`
+- `annual_fee`, `base_reward_rate`, `base_reward_unit`
+
+### `category_rewards`
+- `id`, `card_id`, `category`, `multiplier`
+- `reward_unit`, `description`, `spend_limit`
+
+### `signup_bonuses`
+- `id`, `card_id`, `bonus_amount`, `bonus_currency`
+- `spend_requirement`, `timeframe_days`
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes and add tests
+4. Run tests (`pytest`)
+5. Commit (`git commit -m 'feat: Add amazing feature'`)
+6. Push (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+### Development Setup
 
 ```bash
-# Slow down scraping for rate-limited sites
-export SCRAPER_DELAY=5.0
-export SCRAPER_MAX_DELAY=30.0
+# Install dev dependencies
+pip install -r requirements.txt
 
-# Enable debug logging
-export LOG_LEVEL=DEBUG
+# Run tests with coverage
+pytest --cov=. --cov-report=html
 
-# Adjust retry behavior
-export SCRAPER_MAX_RETRIES=5
-export SCRAPER_RETRY_BACKOFF=3.0
+# Check code quality
+pylint *.py
 ```
 
-### Using Retry Utilities
-
-```python
-from retry_util import retry_with_backoff, RetrySession
-
-# Decorate any function
-@retry_with_backoff(max_retries=3, backoff_factor=2.0)
-def fetch_data(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    return response.json()
-
-# Or use RetrySession
-session = RetrySession(max_retries=3, backoff_factor=2.0, timeout=15)
-response = session.get("https://example.com")
-```
-
-### Error Tracking
-
-```python
-from error_handler import ErrorTracker, ErrorRecovery
-
-tracker = ErrorTracker()
-
-try:
-    # Some operation
-    scrape_website(url)
-except Exception as e:
-    ErrorRecovery.handle_network_error(url, e, tracker)
-
-# Get error summary
-summary = tracker.get_summary()
-print(f"Total errors: {summary['total_errors']}")
-print(f"Errors per minute: {summary['errors_per_minute']}")
-```
-
-## Adding New Cards
-
-Edit `data/curated_cards.json` and add to the `cards` array:
-
-```json
-{
-    "card_key": "issuer-card-name",
-    "name": "Card Display Name",
-    "issuer": "Issuer Name",
-    "reward_program": "Program Name",
-    "reward_currency": "cashback",
-    "point_valuation": 1.0,
-    "annual_fee": 0,
-    "base_reward_rate": 1.0,
-    "base_reward_unit": "percent",
-    "category_rewards": [
-        {"category": "groceries", "multiplier": 2.0, "reward_unit": "percent", "description": "2% on groceries"}
-    ],
-    "signup_bonus": {"bonus_amount": 200, "bonus_currency": "cashback", "spend_requirement": 1000, "timeframe_days": 90}
-}
-```
-
-Then run `python seed_cards.py` to update the database.
-
-## Spending Categories
-
-- `groceries`, `dining`, `gas`, `travel`
-- `online_shopping`, `entertainment`, `drugstores`
-- `home_improvement`, `other`
-
-## Logging
-
-Logs are written to:
-- Console (INFO level and above)
-- File: `logs/webdatascraper_YYYYMMDD_HHMMSS.log` (DEBUG level and above)
-
-Log levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
-
-## Troubleshooting
+## 🐛 Troubleshooting
 
 ### Rate Limited by Websites
 
@@ -266,74 +231,38 @@ SCRAPER_DELAY=5.0
 SCRAPER_MAX_DELAY=30.0
 ```
 
-### Scraper Failures
-
-Check logs in `logs/` directory for detailed error traces. The scraper automatically:
-- Retries failed requests up to 3 times
-- Applies exponential backoff on errors
-- Tracks and reports all errors
-
 ### Database Connection Issues
 
-Verify your Supabase credentials in `.env`:
+Verify Supabase credentials:
 ```bash
-# Test connection
-python -c "from supabase import create_client; import os; from dotenv import load_dotenv; load_dotenv(); print('Connected!' if create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) else 'Failed')"
+python -c "from supabase import create_client; import os; from dotenv import load_dotenv; load_dotenv(); print('✅ Connected!' if create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) else '❌ Failed')"
 ```
 
-## Development
+### Check Logs
 
-### Running Tests
+Logs are written to `logs/webdatascraper_YYYYMMDD_HHMMSS.log` with detailed error traces.
 
-```bash
-pytest tests/ -v
-```
+## 📄 License
 
-### Code Coverage
+MIT License - see [LICENSE](LICENSE) file for details.
 
-```bash
-pytest --cov=. --cov-report=html --cov-report=term-missing
-```
+## 🙏 Acknowledgments
 
-### Git Workflow
+Built for the [Rewards Optimizer](https://github.com/tahseen137/rewards-optimizer) project to help Canadians maximize credit card rewards.
 
-All improvements are developed in feature branches:
+Data sources:
+- [Ratehub](https://www.ratehub.ca/)
+- [MoneySense](https://www.moneysense.ca/)
+- [NerdWallet Canada](https://www.nerdwallet.com/ca/)
+- [CreditCardGenius](https://creditcardgenius.ca/)
+- [GreedyRates](https://www.greedyrates.ca/)
 
-```bash
-git checkout main
-git pull
-git checkout -b feature/your-feature-name
-# Make changes
-git add .
-git commit -m "feat: Your feature description"
-git push -u origin feature/your-feature-name
-```
+## 📧 Contact
 
-## Contributing
+**Tahseen Ahmed**
+- GitHub: [@tahseen137](https://github.com/tahseen137)
+- Project: [WebDataScraper](https://github.com/tahseen137/WebDataScraper)
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+---
 
-## License
-
-MIT
-
-## Changelog
-
-### v2.0.0 (Latest)
-- ✨ Added professional logging framework
-- ✨ Added smart rate limiting with domain tracking
-- ✨ Added retry logic with exponential backoff
-- ✨ Added comprehensive error handling
-- ✨ Added configuration management via environment variables
-- ✨ Added unit tests with pytest
-- 📝 Improved documentation
-
-### v1.0.0
-- Initial release with basic scraping functionality
-- Curated database of 34 Canadian credit cards
-- Multi-source scraping from 5 websites
-- Supabase integration
+⭐ **Star this repo** if you find it useful!
